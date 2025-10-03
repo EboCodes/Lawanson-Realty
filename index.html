@@ -28,6 +28,25 @@
             color: #0d9488;
         }
     </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('img');
+        
+        images.forEach((img) => {
+
+            const src = img.src || img.getAttribute('src') || '';
+            
+            const isLeadershipPhoto = img.closest('#page-about') !== null;
+            const isAgentPhoto = img.classList.contains('rounded-full') || 
+                                 img.closest('.agent-card') !== null;
+            
+
+            if (!isLeadershipPhoto && !isAgentPhoto) {
+                img.setAttribute('loading', 'lazy');
+            }
+        });
+    });
+</script>
 </head>
 <body class="min-h-screen flex flex-col">
 
