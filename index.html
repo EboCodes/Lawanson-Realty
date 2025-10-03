@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawanson Realty - Refined Professional Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcf9; 
+        }
+        .listing-card, .details-card, .agent-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+        }
+        .listing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+        .feature-icon {
+            color: #0d9488;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+               
+                <a href="#" onclick="showPage('home'); resetAgentFilter();" class="text-2xl font-extrabold text-teal-700 tracking-tight">
+                   <i class="fa-solid fa-home-alt mr-2 text-gray-900"></i> Lawanson <span class="text-gray-900">Realty</span>
+                </a>
+                
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-10">
+                    <a href="#" onclick="showPage('home'); resetAgentFilter();" class="text-gray-700 hover:text-teal-600 transition border-b-2 border-transparent hover:border-teal-600 py-2 font-semibold">Listings</a>
+                    <a href="#" onclick="showPage('about')" class="text-gray-700 hover:text-teal-600 transition border-b-2 border-transparent hover:border-teal-600 py-2 font-semibold">About Us</a>
+                    <a href="#" onclick="showPage('agents')" class="text-gray-700 hover:text-teal-600 transition border-b-2 border-transparent hover:border-teal-600 py-2 font-semibold">Agents</a>
+                </nav>
+                
+                <div class="hidden md:block">
+                    <button onclick="openModal('general-contact')" class="px-5 py-2 text-base font-semibold rounded-xl text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-300 transition duration-150 shadow-lg">
+                        List Your Home
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 z-30">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden absolute w-full bg-white shadow-xl z-10">
+            <div class="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                <a href="#" onclick="showPage('home'); resetAgentFilter();" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-600">Listings</a>
+                <a href="#" onclick="showPage('about')" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-600">About Us</a>
+                <a href="#" onclick="showPage('agents')" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-600">Agents</a>
+                <button onclick="openModal('general-contact')" class="w-full mt-3 px-4 py-3 text-base font-semibold rounded-xl text-white bg-teal-600 hover:bg-teal-700">
+                    List Your Home
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="flex-grow">
+        <!-- 1. HOME/LISTINGS PAGE (Visible by Default) -->
+        <div id="page-home" class="page-content">
+            <section class="bg-white pt-16 pb-10 sm:pt-20 sm:pb-12 border-b border-gray-100 shadow-inner">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
+                        Find Your Dream Home
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-10">
+                        Search thousands of exclusive properties in top neighborhoods.
+                    </p>
+                    
+                    <div class="max-w-6xl mx-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+                            <input type="text" id="search-location" placeholder="City, Address, or Zip"
+                                   class="col-span-1 md:col-span-2 p-3 border-2 border-gray-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900 placeholder-gray-500" />
+                            
+                            <select id="search-type" class="p-3 border-2 border-gray-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900">
+                                <option value="">Any Type</option>
+                                <option value="House">House</option>
+                                <option value="Apartment">Apartment</option>
+                                <option value="Condo">Condo</option>
+                                <option value="Land">Land</option>
+                            </select>
+
+                            <input type="number" id="search-min-price" placeholder="Min Price ($)"
+                                   class="p-3 border-2 border-gray-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900 placeholder-gray-500" />
+                            
+                            <input type="number" id="search-max-price" placeholder="Max Price ($)"
+                                   class="p-3 border-2 border-gray-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900 placeholder-gray-500" />
+
+                            <select id="search-beds" class="p-3 border-2 border-gray-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900">
+                                <option value="0">Min Beds</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                            </select>
+                            
+                            <button onclick="filterListings()"
+                                    class="col-span-1 p-3 rounded-lg text-white font-bold bg-teal-600 hover:bg-teal-700 transition duration-150 shadow-md hover:shadow-lg">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                
+                <div class="bg-teal-50 p-8 rounded-2xl shadow-inner border border-teal-100 mb-12">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-teal-200 pb-3">Local Market Overview</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-teal-600 uppercase">Avg. Price</p>
+                            <p class="text-3xl font-extrabold text-gray-900 mt-1">$1.15M</p>
+                            <p class="text-sm text-green-600 flex items-center justify-center mt-1"><i class="fa-solid fa-arrow-up mr-1"></i> +4.5% YTD</p>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-teal-600 uppercase">Active Listings</p>
+                            <p class="text-3xl font-extrabold text-gray-900 mt-1">2,340</p>
+                            <p class="text-sm text-red-600 flex items-center justify-center mt-1"><i class="fa-solid fa-arrow-down mr-1"></i> -8.1% YTD</p>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-teal-600 uppercase">Avg. Days on Market</p>
+                            <p class="text-3xl font-extrabold text-gray-900 mt-1">28</p>
+                            <p class="text-sm text-green-600 flex items-center justify-center mt-1"><i class="fa-solid fa-arrow-down mr-1"></i> -15 Days</p>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs font-semibold text-teal-600 uppercase">Avg. Rent</p>
+                            <p class="text-3xl font-extrabold text-gray-900 mt-1">$3,150</p>
+                            <p class="text-sm text-green-600 flex items-center justify-center mt-1"><i class="fa-solid fa-arrow-up mr-1"></i> +2.0% YTD</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+                    <h2 class="text-3xl font-extrabold text-gray-900">
+                        <span id="listings-heading">Available Properties</span>
+                        <button id="reset-filter-btn" class="hidden ml-4 text-sm text-red-500 hover:text-red-700 font-medium transition" onclick="resetAgentFilter()">
+                            (Clear Agent Filter)
+                        </button>
+                    </h2>
+                    <span id="listing-count" class="text-lg font-semibold text-gray-600 mt-2 sm:mt-0"></span>
+                </div>
+                
+                <div id="listings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                   <!-- Listing Grids -->
+                </div>
+
+              
+                <div id="no-results" class="hidden lg:col-span-3 text-center py-20 bg-white rounded-3xl shadow-inner">
+                    <p class="text-2xl font-semibold text-gray-700 mb-2">No Properties Found</p>
+                    <p class="text-lg text-gray-500">Try adjusting your search filters or location.</p>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 2. PROPERTY DETAILS PAGE (Hidden by Default) -->
+        <div id="page-details" class="page-content hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <!-- Back button -->
+                <button onclick="showPage('home')" class="flex items-center text-teal-600 hover:text-teal-800 font-semibold mb-8 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Listings
+                </button>
+                
+                <div id="details-container">
+                    <!-- Dynamic details -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. ABOUT US PAGE (Hidden by Default) -->
+        <div id="page-about" class="page-content hidden">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <h1 class="text-5xl font-extrabold text-gray-900 mb-6">About Lawanson Realty</h1>
+                <p class="text-xl text-teal-700 mb-12">Building dreams, one home at a time.</p>
+                
+                <div class="bg-white p-10 rounded-3xl shadow-xl space-y-10 border border-gray-100">
+                    <section>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">Our Mission</h2>
+                        <p class="text-gray-700 text-lg leading-relaxed">
+                            We are dedicated to making the process of buying, selling, and renting properties as transparent, efficient, and joyful as possible. By combining cutting-edge technology with personalized, expert service, we empower our clients to make informed decisions and achieve their real estate goals.
+                        </p>
+                    </section>
+                    
+                    <section>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">Our Core Values</h2>
+                        <ul class="text-gray-700 space-y-3 list-disc list-inside text-lg">
+                            <li>Integrity: We uphold the highest ethical standards in every transaction.</li>
+                            <li>Innovation: We leverage technology to constantly improve the client experience.</li>
+                            <li>Excellence: We strive for exceptional results in every market condition.</li>
+                        </ul>
+                    </section>
+                    
+                    <section>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">Leadership Team</h2>
+                        <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-8 mt-6">
+                            <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-xl w-full sm:w-1/2 border border-gray-200">
+                                <img src="f1.webp" class="rounded-full h-20 w-20 object-cover border-4 border-teal-200" alt="CEO Placeholder">
+                                <div>
+                                    <p class="font-bold text-xl text-gray-900">Jane Doe</p>
+                                    <p class="text-teal-600">Chief Executive Officer</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-xl w-full sm:w-1/2 border border-gray-200">
+                                <img src="m1.webp" class="rounded-full h-20 w-20 object-cover border-4 border-teal-200" alt="COO Placeholder">
+                                <div>
+                                    <p class="font-bold text-xl text-gray-900">Chris Smith</p>
+                                    <p class="text-teal-600">Chief Operating Officer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 4. AGENTS DIRECTORY PAGE (Hidden by Default) -->
+        <div id="page-agents" class="page-content hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <h1 class="text-5xl font-extrabold text-gray-900 mb-6">Meet Our Expert Agents</h1>
+                <p class="text-xl text-gray-600 mb-12">Dedicated specialists ready to guide you home.</p>
+                <div id="agents-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Agent cards -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Overlay (Hidden by Default) -->
+    <div id="global-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden flex items-center justify-center p-4" onclick="closeModal()">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all" onclick="event.stopPropagation()">
+            <div class="p-8">
+                <h3 id="modal-title" class="text-3xl font-extrabold text-gray-900 mb-4">Schedule a Showing</h3>
+                <p id="modal-subtitle" class="text-gray-600 mb-6">Please provide your contact information and preferred time.</p>
+                
+                <form id="contact-form">
+                    <input type="hidden" id="modal-type-hidden"> 
+                    <input type="hidden" id="modal-listing-id">
+                    <input type="hidden" id="modal-agent-id">
+                    
+                    <div class="space-y-4">
+                        <input type="text" id="contact-name" placeholder="Your Full Name" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900" />
+                        <input type="email" id="contact-email" placeholder="Email Address" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900" />
+                        <input type="text" id="contact-phone" placeholder="Phone Number"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900" />
+                        <textarea id="contact-message" placeholder="Include your preferred date/time or specific questions" rows="3" required
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-gray-900"></textarea>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" class="px-5 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</button>
+                        <button type="submit" class="px-5 py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition font-semibold">Send Message</button>
+                    </div>
+                </form>
+                
+                <div id="modal-success" class="hidden text-center p-6">
+                    <svg class="mx-auto w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="text-xl font-bold mt-4 text-gray-900">Request Sent!</p>
+                    <p id="success-message" class="text-gray-600 mt-2">The agent will contact you shortly to follow up.</p>
+                    <button type="button" onclick="closeModal()" class="mt-6 px-5 py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition font-semibold">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="border-b border-gray-700 mt-5 pb-6 text-center text-gray-500 text-xs">
+                &copy; 2024 Lawanson Realty.
+            </div>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="text-gray-400 hover:text-teal-400"><i class="fa-brands fa-facebook text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-teal-400"><i class="fa-brands fa-twitter text-xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-teal-400"><i class="fa-brands fa-linkedin text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        //Mock data for listing
+        const MOCK_LISTINGS = [
+            {
+                "id": 1, "agentId": "sarah", "title": "Stunning Modern Farmhouse with Views", 
+                "price": 1250000, "displayPrice": "$1,250,000", "location": "Pleasantville, CA 94566", "type": "House",
+                "beds": 4, "baths": 3.5, "sqft": 3200, "displaySqft": "3,200", 
+                "features": {"garage": 3, "hoa": "Yes ($150/mo)", "yearBuilt": 2018},
+                "description": "A masterpiece of modern design and rustic charm. This house features an open-concept living area, high ceilings, a chef's kitchen with premium appliances, and sweeping views of the valley. Perfect for a family that values both luxury and nature.",
+                "amenities": ["Central A/C", "Smart Home System", "Fenced Yard", "Outdoor Kitchen"],
+                "images": ["1.webp", "2.webp", "3.webp"], "tag": "New Listing"
+            },
+            {
+                "id": 2, "agentId": "jessica", "title": "Executive Apartment in Financial District", 
+                "price": 3800, "displayPrice": "$3,800/mo", "location": "San Francisco, CA 94105", "type": "Apartment",
+                "beds": 1, "baths": 1, "sqft": 850, "displaySqft": "850", 
+                "features": {"garage": 0, "hoa": "Included in Rent", "yearBuilt": 2022},
+                "description": "Sleek, sophisticated living in the heart of the city. Enjoy concierge services, a rooftop deck with panoramic views, and walking distance to all major transportation hubs and dining.",
+                "amenities": ["24/7 Concierge", "Rooftop Lounge", "Gym Access", "In-Unit Laundry"],
+                "images": ["apat.webp"], "tag": "For Rent"
+            },
+            {
+                "id": 3, "agentId": "jessica", "title": "Charming 2-Bed Condo near University", 
+                "price": 495000, "displayPrice": "$495,000", "location": "Oakland, CA 94611", "type": "Condo",
+                "beds": 2, "baths": 2, "sqft": 1100, "displaySqft": "1,100", 
+                "features": {"garage": 1, "hoa": "Yes ($300/mo)", "yearBuilt": 1998},
+                "description": "An ideal starter home or investment property. Freshly painted with updated flooring, offering two spacious bedrooms and a community pool. Low maintenance living close to shops and cafes.",
+                "amenities": ["Community Pool", "Private Balcony", "Secure Entry", "Extra Storage"],
+                "images": ["condo.webp"], "tag": "Hot Deal"
+            },
+            {
+                "id": 4, "agentId": "david", "title": "Expansive Vacant Lot - Build Your Custom Home", 
+                "price": 210000, "displayPrice": "$210,000", "location": "Marin County, CA 94901", "type": "Land",
+                "beds": 0, "baths": 0, "sqft": 14000, "displaySqft": "14,000", 
+                "features": {"garage": 0, "hoa": "No", "yearBuilt": "N/A"},
+                "description": "A rare opportunity to acquire a spacious, buildable lot in a highly sought-after area. Utilities are stubbed to the street. Ready for architectural plans.",
+                "amenities": ["Prime Location", "Flat Topography", "Utilities Available"],
+                "images": ["land.webp"], "tag": "Investment"
+            },
+            {
+                "id": 5, "agentId": "michael", "title": "Classic Tudor Home with Large Yard", 
+                "price": 999000, "displayPrice": "$999,000", "location": "San Jose, CA 95125", "type": "House",
+                "beds": 5, "baths": 4, "sqft": 4000, "displaySqft": "4,000", 
+                "features": {"garage": 2, "hoa": "No", "yearBuilt": 1978},
+                "description": "Timeless elegance meets modern convenience. This 5-bed home boasts original hardwood floors, two fireplaces, a formal dining room, and an enormous backyard perfect for entertaining.",
+                "amenities": ["Formal Dining", "Two Fireplaces", "Finished Basement", "Shed"],
+                "images": ["tudor.webp"], "tag": "Price Drop"
+            },
+            {
+                "id": 6, "agentId": "sarah", "title": "Luxury Penthouse with Ocean Views", 
+                "price": 3500000, "displayPrice": "$3,500,000", "location": "San Francisco, CA 94123", "type": "Condo",
+                "beds": 3, "baths": 3, "sqft": 2500, "displaySqft": "2,500", 
+                "features": {"garage": 2, "hoa": "Yes ($950/mo)", "yearBuilt": 2010},
+                "description": "Exclusive top-floor residence with unparalleled views and finishes.",
+                "amenities": ["Private elevator", "Fitness center", "24/7 Security"],
+                "images": ["pent.webp"], "tag": "Luxury"
+            }
+        ];
+
+        const MOCK_AGENTS = [
+            {"id": 'sarah', "name": 'Sarah Chen', "title": 'Luxury Homes Specialist', "phone": '(555) 501-1234', "email": 'sarah.c@lawasonrealty.com', "location": 'Piedmont & Oakland Hills', "image": 'f1.webp'},
+            {"id": 'michael', "name": 'Michael Rodriguez', "title": 'First-Time Buyer Advisor', "phone": '(555) 501-5678', "email": 'michael.r@lawasonrealty.com', "location": 'San Jose & Silicon Valley', "image": 'm2.webp'},
+            {"id": 'jessica', "name": 'Jessica Lee', "title": 'Rental & Condo Expert', "phone": '(555) 501-9012', "email": 'jessica.l@lawasonrealty.com', "location": 'San Francisco Financial District', "image": 'f2.webp'},
+            {"id": 'david', "name": 'David Kim', "title": 'Investment Property Guru', "phone": '(555) 501-3456', "email": 'david.k@lawasonrealty.com', "location": 'Marin County', "image": 'm1.webp'}
+        ];
+        
+        let allListings = MOCK_LISTINGS;
+        let allAgents = MOCK_AGENTS;
+        let activeAgentFilter = null; 
+        let imageCarousels = {}; 
+        
+        const listingsGrid = document.getElementById('listings-grid');
+        const noResultsMessage = document.getElementById('no-results');
+        const listingCountElement = document.getElementById('listing-count');
+        const detailsContainer = document.getElementById('details-container');
+        const agentsGrid = document.getElementById('agents-grid');
+        const listingsHeading = document.getElementById('listings-heading');
+        const resetFilterBtn = document.getElementById('reset-filter-btn');
+        
+        const svgIcons = {
+            bed: '<i class="fa-solid fa-bed feature-icon"></i>',
+            bath: '<i class="fa-solid fa-bath feature-icon"></i>',
+            sqft: '<i class="fa-solid fa-house feature-icon"></i>',
+            garage: '<i class="fa-solid fa-car-garage feature-icon"></i>',
+            year: '<i class="fa-solid fa-calendar-alt feature-icon"></i>',
+            hoa: '<i class="fa-solid fa-coins feature-icon"></i>',
+            phone: '<i class="fa-solid fa-phone"></i>',
+            email: '<i class="fa-solid fa-envelope"></i>',
+            area: '<i class="fa-solid fa-map-marker-alt"></i>',
+        };
+
+        //API Handler for Neighborhood Vibe
+
+        async function fetchNeighborhoodSummary(location) {
+            const systemPrompt = "You are a professional real estate marketing expert. Write a concise, engaging, two-paragraph summary (under 150 words total) about the VIBE and key highlights of this neighborhood/city. Focus on lifestyle, appeal, and unique selling points. Do not mention price or specific property details.";
+            const userQuery = `Write a neighborhood summary for: ${location}`;
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            const maxRetries = 3;
+            let currentDelay = 1000;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        await new Promise(resolve => setTimeout(resolve, currentDelay));
+                        currentDelay *= 2;
+                        continue; 
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "Could not generate neighborhood summary.";
+
+                } catch (error) {
+                    console.error(`Attempt ${i + 1} failed.`, error);
+                }
+            }
+            return "Failed to load neighborhood insights due to a network error.";
+        }
+        
+        const pageIds = ['page-home', 'page-details', 'page-about', 'page-agents']; 
+
+        function showPage(pageId, listingId = null) {
+            pageIds.forEach(id => {
+                const page = document.getElementById(id);
+                if(page) page.classList.add('hidden');
+            });
+            
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (pageId === 'details' && listingId !== null) {
+                renderPropertyDetails(listingId);
+            } else if (pageId === 'agents') {
+                renderAgents(); 
+            } else if (pageId === 'home') {
+                filterListings();
+            }
+
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function showAgentListings(agentId) {
+            const agent = allAgents.find(a => a.id === agentId);
+            if (!agent) return;
+
+            activeAgentFilter = agentId;
+            showPage('home');
+            
+            listingsHeading.textContent = `Listings by ${agent.name}`;
+            resetFilterBtn.classList.remove('hidden');
+
+            filterListings(); 
+        }
+
+        function resetAgentFilter() {
+            activeAgentFilter = null;
+            listingsHeading.textContent = 'Available Properties';
+            resetFilterBtn.classList.add('hidden');
+            filterListings();
+        }
+
+        function createAgentCard(agent) {
+            const agentListingsCount = allListings.filter(l => l.agentId === agent.id).length;
+            return `
+                <div class="agent-card bg-white rounded-2xl p-6 shadow-md border border-gray-100 flex flex-col items-center text-center">
+                    <img src="${agent.image}" 
+                         onerror="this.onerror=null; this.src='https://placehold.co/100x100/374151/ffffff?text=${agent.name.split(' ').map(n=>n[0]).join('')}';" 
+                         alt="${agent.name}" 
+                         class="rounded-full h-24 w-24 object-cover border-4 border-teal-200 mb-4">
+                    
+                    <h3 class="text-xl font-bold text-gray-900">${agent.name}</h3>
+                    <p class="text-sm font-semibold text-teal-600 mb-4">${agent.title}</p>
+                    
+                    <div class="space-y-2 text-left w-full max-w-xs">
+                        <p class="flex items-center text-gray-700 text-sm">
+                            ${svgIcons.area}   
+                              <span class="font-medium ml-2"></span> ${agent.location}
+                        </p>
+                        <a href="tel:${agent.phone}" class="flex items-center text-gray-700 text-sm hover:text-teal-600 transition">
+                            ${svgIcons.phone}
+                            <span class="font-medium ml-2"></span> ${agent.phone}
+                        </a>
+                        <a href="mailto:${agent.email}" class="flex items-center text-gray-700 text-sm hover:text-teal-600 transition">
+                            ${svgIcons.email}
+                            <span class="font-medium ml-2"></span> ${agent.email}
+                        </a>
+                    </div>
+                    
+                    <button onclick="showAgentListings('${agent.id}')"
+                            class="mt-6 w-full py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition shadow-md">
+                        View Listings (${agentListingsCount})
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderAgents() {
+            agentsGrid.innerHTML = allAgents.map(agent => createAgentCard(agent)).join('');
+        }
+
+        function createListingCard(listing) {
+            const agent = allAgents.find(a => a.id === listing.agentId);
+            const agentName = agent ? agent.name : 'Agent';
+
+            return `
+                <div class="listing-card bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:border-teal-500 transition-all">
+                    <div onclick="showPage('details', ${listing.id})" class="cursor-pointer">
+                        <div class="relative">
+                            <img src="${listing.images[0].replace('1200x800', '800x600')}" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x600/374151/ffffff?text=Image+Unavailable';" 
+                                 alt="${listing.title}" 
+                                 class="w-full h-52 object-cover">
+                            
+                            <span class="absolute top-4 left-4 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 uppercase tracking-wider">
+                                ${listing.tag}
+                            </span>
+                            
+                            <span class="absolute bottom-0 right-0 bg-gray-900 text-white text-xs font-semibold px-3 py-1 rounded-tl-lg opacity-90">
+                                ${listing.type}
+                            </span>
+                        </div>
+                        
+                        <div class="p-5 pb-3">
+                            <p class="text-4xl font-extrabold text-teal-700 mb-1">${listing.displayPrice}</p>
+                            <p class="text-sm font-semibold text-gray-600 mb-3">${listing.location}</p>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 truncate">${listing.title}</h3>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 p-5 pt-3 flex justify-between items-center">
+                        ${listing.type !== 'Land' ? `
+                            <div class="flex space-x-4 text-sm font-medium text-gray-700">
+                                <span title="Bedrooms" class="flex items-center">${svgIcons.bed} ${listing.beds} Bds</span>
+                                <span title="Bathrooms" class="flex items-center">${svgIcons.bath} ${listing.baths} Ba</span>
+                                <span title="Square Footage" class="flex items-center">${svgIcons.sqft} ${listing.displaySqft} ft²</span>
+                            </div>
+                        ` : `<p class="text-sm font-medium text-gray-500">${listing.displaySqft} sqft Lot</p>`}
+                        
+                        <button onclick="openModal('showing-request', ${listing.id}, '${listing.agentId}')" 
+                                class="px-2 py-1.5 text-sm font-semibold rounded-lg text-white bg-teal-600 hover:bg-teal-700 transition shadow-md">
+                            Contact ${agentName.split(' ')[0]}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function renderPropertyDetails(id) {
+            currentImageIndex = 0; // Reset carousel index
+            
+            const listing = allListings.find(l => l.id === id);
+            const agent = allAgents.find(a => a.id === listing.agentId);
+            
+            if (!listing || !agent) {
+                detailsContainer.innerHTML = '<div class="text-center text-red-500 text-2xl">Property or Agent Not Found.</div>';
+                return;
+            }
+
+            detailsContainer.innerHTML = `
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    
+							
+				<div class="relative h-[400px] sm:h-[500px] overflow-hidden">
+					<img id="detail-image" src="${listing.images[0]}" 
+						 onerror="this.onerror=null; this.src='https://placehold.co/1200x800/374151/ffffff?text=Image+Unavailable';" 
+						 alt="${listing.title}" 
+						 class="w-full h-full object-cover transition-opacity duration-300">
+					
+					<!-- Carousel Controls -->
+					${listing.images.length > 1 ? `
+						<button onclick="changeImage(${listing.id}, -1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition z-20">
+							<i class="fa-solid fa-chevron-left"></i>
+						</button>
+						<button onclick="changeImage(${listing.id}, 1)" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition z-20">
+							<i class="fa-solid fa-chevron-right"></i>
+						</button>
+						<div id="image-dots-${listing.id}" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-20">
+							${listing.images.map((_, index) => `
+								<span 
+									class="h-2 rounded-full bg-white transition-all cursor-pointer ${index === 0 ? 'opacity-100 w-4' : 'opacity-50 w-2'}" 
+									data-index="${index}"
+									onclick="goToImage(${listing.id}, ${index})"
+								></span>
+							`).join('')}
+						</div>
+					` : ''}
+					
+					<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-8 flex items-end pointer-events-none">
+						<h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight">${listing.title}</h1>
+					</div>
+				</div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 p-8 sm:p-12">
+                       
+                        <div class="lg:col-span-2">
+                            <p class="text-4xl font-black text-teal-700 mb-6">${listing.displayPrice}</p>
+                            <div class="details-card bg-teal-50 p-6 rounded-2xl border border-teal-200 mb-8">
+                                <p class="text-sm font-bold text-teal-600 mb-3">KEY DETAILS</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-gray-800">
+                                    <span class="flex flex-col items-center">
+                                        ${svgIcons.bed.replace('feature-icon', 'feature-icon text-3xl')}
+                                        <span class="font-extrabold text-2xl">${listing.beds}</span>
+                                        <span class="text-sm text-gray-600">Bedrooms</span>
+                                    </span>
+                                    <span class="flex flex-col items-center">
+                                        ${svgIcons.bath.replace('feature-icon', 'feature-icon text-3xl')}
+                                        <span class="font-extrabold text-2xl">${listing.baths}</span>
+                                        <span class="text-sm text-gray-600">Bathrooms</span>
+                                    </span>
+                                    <span class="flex flex-col items-center">
+                                        ${svgIcons.sqft.replace('feature-icon', 'feature-icon text-3xl')}
+                                        <span class="font-extrabold text-2xl">${listing.displaySqft}</span>
+                                        <span class="text-sm text-gray-600">Sq. Ft.</span>
+                                    </span>
+                                    <span class="flex flex-col items-center">
+                                        ${svgIcons.year.replace('feature-icon', 'feature-icon text-3xl')}
+                                        <span class="font-extrabold text-2xl">${listing.features.yearBuilt}</span>
+                                        <span class="text-sm text-gray-600">Built</span>
+                                    </span>
+                                </div>
+                            </div>
+                          
+                            <h2 class="text-3xl font-bold text-gray-900 mb-4 mt-6">Property Description</h2>
+                            <p class="text-gray-700 text-lg leading-relaxed mb-10">${listing.description}</p>
+                            
+                            <h2 class="text-3xl font-bold text-gray-900 mb-4">Neighborhood Vibe</h2>
+                            <div id="neighborhood-vibe-container" class="p-6 bg-gray-50 rounded-xl mb-10">
+                                <p id="neighborhood-vibe-content" class="text-gray-600 text-lg">
+                                    <i class="fa-solid fa-spinner fa-spin text-teal-500 mr-2"></i> Loading local insights for ${listing.location}...
+                                </p>
+                            </div>
+                            
+                            <h2 class="text-3xl font-bold text-gray-900 mb-4">Community & Home Amenities</h2>
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 text-lg text-gray-700">
+                                ${listing.amenities.map(a => `<li class="flex items-center"><svg class="w-6 h-6 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${a}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="lg:col-span-1 space-y-8">
+                            <div class="details-card bg-gray-50 p-6 rounded-2xl shadow-md border border-gray-200 lg:sticky lg:top-8">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">Your Agent</h3>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <img src="${agent.image}" 
+                                         onerror="this.onerror=null; this.src='https://placehold.co/60x60/374151/ffffff?text=${agent.name.split(' ').map(n=>n[0]).join('')}';" 
+                                         alt="${agent.name}" 
+                                         class="rounded-full h-16 w-16 object-cover border-2 border-teal-400">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">${agent.name}</p>
+                                        <p class="text-sm text-teal-600">${agent.title}</p>
+                                    </div>
+                                </div>
+                                <button onclick="openModal('showing-request', ${listing.id}, '${listing.agentId}')" class="w-full py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition shadow-lg">
+                                    Schedule a Showing
+                                </button>
+                                <a href="tel:${agent.phone}" class="block text-center w-full py-3 mt-3 bg-white text-teal-600 font-semibold rounded-lg border border-teal-600 hover:bg-teal-50 transition">
+                                    Call ${agent.phone}
+                                </a>
+                            </div>
+                            <div class="details-card bg-gray-50 p-6 rounded-2xl shadow-md border border-gray-200">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">Specifications</h3>
+                                <ul class="space-y-3 text-gray-700">
+                                    <li class="flex justify-between items-center border-b pb-2">
+                                        <span class="flex items-center text-sm font-medium"><i class="fa-solid fa-expand mr-2 text-teal-500"></i> Lot Size:</span>
+                                        <span class="font-semibold">${listing.displaySqft || 'N/A'} sqft</span>
+                                    </li>
+                                    <li class="flex justify-between items-center border-b pb-2">
+                                        <span class="flex items-center text-sm font-medium">${svgIcons.garage} Garage Spaces:</span>
+                                        <span class="font-semibold">${listing.features.garage}</span>
+                                    </li>
+                                    <li class="flex justify-between items-center border-b pb-2">
+                                        <span class="flex items-center text-sm font-medium">${svgIcons.hoa} HOA Fees:</span>
+                                        <span class="font-semibold">${listing.features.hoa}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Start fetching LLM content and update the relevant element
+            fetchNeighborhoodSummary(listing.location).then(summary => {
+                document.getElementById('neighborhood-vibe-content').innerHTML = summary;
+            }).catch(e => {
+                // If API fails, show a friendly fallback message
+                document.getElementById('neighborhood-vibe-content').textContent = "We couldn't load local insights right now, but feel free to ask your agent!";
+                console.error("LLM fetch failed:", e);
+            });
+        }
+        
+		//Image Carousel Logic - track per listing
+		let currentListingId = null;
+		let currentImageIndex = 0;
+
+		function updateImageDots(listingId, index) {
+			const dots = document.querySelectorAll(`#image-dots-${listingId} span`);
+			dots.forEach((dot, i) => {
+				if (i === index) {
+					dot.classList.remove('opacity-50', 'w-2');
+					dot.classList.add('opacity-100', 'w-4');
+				} else {
+					dot.classList.remove('opacity-100', 'w-4');
+					dot.classList.add('opacity-50', 'w-2');
+				}
+			});
+		}
+
+		function changeImage(listingId, direction) {
+			const listing = allListings.find(l => l.id === listingId);
+			if (!listing) return;
+			
+			// Reset if switching listings
+			if (currentListingId !== listingId) {
+				currentListingId = listingId;
+				currentImageIndex = 0;
+			}
+			
+			let newIndex = currentImageIndex + direction;
+			if (newIndex >= listing.images.length) {
+				newIndex = 0;
+			} else if (newIndex < 0) {
+				newIndex = listing.images.length - 1;
+			}
+			
+			currentImageIndex = newIndex;
+			document.getElementById('detail-image').src = listing.images[newIndex];
+			updateImageDots(listingId, newIndex);
+		}
+
+		function goToImage(listingId, index) {
+			const listing = allListings.find(l => l.id === listingId);
+			if (!listing) return;
+			
+			currentListingId = listingId;
+			currentImageIndex = index;
+			
+			document.getElementById('detail-image').src = listing.images[index];
+			updateImageDots(listingId, index);
+		}
+
+        // --- Filtering Logic ---
+
+        function filterListings() {
+            const locationInput = document.getElementById('search-location').value.toLowerCase().trim();
+            const typeSelect = document.getElementById('search-type').value;
+            const bedsSelect = parseInt(document.getElementById('search-beds').value);
+            const minPrice = parseFloat(document.getElementById('search-min-price').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('search-max-price').value) || Infinity;
+
+
+            let filtered = allListings.filter(listing => {
+                const matchesLocation = !locationInput || 
+                                        listing.location.toLowerCase().includes(locationInput) ||
+                                        listing.title.toLowerCase().includes(locationInput);
+                const matchesType = !typeSelect || listing.type === typeSelect;
+                const matchesBeds = bedsSelect === 0 || listing.beds >= bedsSelect;
+                
+                const matchesPrice = listing.price >= minPrice && listing.price <= maxPrice;
+
+                return matchesLocation && matchesType && matchesBeds && matchesPrice;
+            });
+            
+            if (activeAgentFilter) {
+                filtered = filtered.filter(listing => listing.agentId === activeAgentFilter);
+            }
+            
+            renderListings(filtered);
+        }
+
+        function renderListings(listings) {
+            listingsGrid.innerHTML = '';
+            listingCountElement.textContent = `${listings.length} Results`;
+            
+            if (listings.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+            } else {
+                noResultsMessage.classList.add('hidden');
+                listings.forEach(listing => {
+                    listingsGrid.innerHTML += createListingCard(listing);
+                });
+            }
+        }
+        
+        // --- Modal Logic ---
+
+        function openModal(type, listingId = null, agentId = null) {
+            const modal = document.getElementById('global-modal');
+            const form = document.getElementById('contact-form');
+            const success = document.getElementById('modal-success');
+            const title = document.getElementById('modal-title');
+            const subtitle = document.getElementById('modal-subtitle');
+            
+            form.reset();
+            form.classList.remove('hidden');
+            success.classList.add('hidden');
+
+            document.getElementById('modal-type-hidden').value = type;
+            document.getElementById('modal-listing-id').value = listingId || '';
+            document.getElementById('modal-agent-id').value = agentId || '';
+
+            if (type === 'showing-request' && listingId) {
+                const listing = allListings.find(l => l.id === listingId);
+                title.textContent = `Schedule Showing for ${listing.title}`;
+                subtitle.textContent = `Connect directly with the listing agent to view this property.`;
+                document.getElementById('contact-message').placeholder = "Preferred date/time and any questions...";
+            } else {
+                 title.textContent = `General Inquiry`;
+                 subtitle.textContent = `We're here to answer all your real estate questions.`;
+                 document.getElementById('contact-message').placeholder = "What can we help you with today?";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('global-modal').classList.add('hidden');
+        }
+
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('modal-type-hidden').value;
+            const listingId = document.getElementById('modal-listing-id').value;
+            const agentId = document.getElementById('modal-agent-id').value;
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+            
+            console.log(`--- Request Submitted (Type: ${type}) ---`);
+            console.log(`Listing ID: ${listingId || 'N/A'}, Agent ID: ${agentId || 'N/A'}`);
+            console.log(`Name: ${name}, Email: ${email}`);
+            console.log(`Message: ${message.substring(0, 50)}...`);
+            
+            document.getElementById('contact-form').classList.add('hidden');
+            document.getElementById('modal-success').classList.remove('hidden');
+            
+          
+            const successMsg = document.getElementById('success-message');
+            if (type === 'showing-request') {
+                successMsg.textContent = "Your showing request has been sent. The agent will contact you shortly to confirm the appointment.";
+            } else {
+                successMsg.textContent = "Thank you! A member of our team will review your inquiry and get back to you soon.";
+            }
+          
+            setTimeout(closeModal, 4000);
+        });
+        
+      
+
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+  
+            filterListings(); 
+        });
+
+     
+        window.showPage = showPage;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.filterListings = filterListings;
+        window.showAgentListings = showAgentListings;
+        window.resetAgentFilter = resetAgentFilter;
+        window.changeImage = changeImage;
+    </script>
+</body>
+</html>
