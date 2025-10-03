@@ -398,7 +398,7 @@
         async function fetchNeighborhoodSummary(location) {
             const systemPrompt = "You are a professional real estate marketing expert. Write a concise, engaging, two-paragraph summary (under 150 words total) about the VIBE and key highlights of this neighborhood/city. Focus on lifestyle, appeal, and unique selling points. Do not mention price or specific property details.";
             const userQuery = `Write a neighborhood summary for: ${location}`;
-            const apiKey = "AIzaSyDlzEGvYUapa7XzWf2Byl45TLbl8R6dUys"; 
+            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             const payload = {
